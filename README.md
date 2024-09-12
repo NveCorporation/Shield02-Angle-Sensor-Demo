@@ -12,5 +12,6 @@ Instructions:
   3. Attach and Insert the Shield02-Panel into the pinout of the Arduino Uno
   4. Insert the Sensor Eval Board into the Shield02 insert slot
   5. Put the plastic casing on top the Shield02
-  6. Spin the magnet and enjoy the show
-  7. Press the button for different functions
+  6. Place magnet inside of any of the magnet holders.
+  7. Spin the magnet and enjoy the show
+  8. Press the button for different functions
