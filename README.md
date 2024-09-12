@@ -8,7 +8,7 @@ the magnetic fields in different manners and still our sensors will be able to f
 
 Instructions:
   1. Download Arduino IDE
-  2. Copy and Paste the corresponding sensors code into Arduino IDE to flash the Arduino Uno
+  2. Copy and Paste the corresponding sensor code into Arduino IDE to flash the Arduino Uno
   3. Attach and Insert the Shield02-Panel into the pinout of the Arduino Uno
   4. Insert the Sensor Eval Board into the Shield02 insert slot
   5. Put the plastic casing on top the Shield02
