@@ -1,17 +1,15 @@
 # Shield02-Off-Axis-Sensor-Panel
-Arduino Uno Shield02 Off-Axis Sensor Panel Codes featuring our AAT's, ADT's, ASR002, ASR012, ASR022, ALT521
+Arduino Uno Shield02 demonstrates NVE ALT521 or AAT-, ADT- and ASR-Series angle/rotation sensors. The Shield shows how our sensors are limited only by your imagination.
 
-The Shield02 Off Axis Sensor is used to display that the limitation of our sensors is the imagination.
-All of the sensors used in this demonstration are off axis sensors used to determine the angle/orientation
-of the magnetic field given off by the neodinium magnet. The Shield also demonstraights how you may orient
-the magnetic fields in different manners and still our sensors will be able to function with precision.
+The Shield connects via an edge connector to the breakout board above or other breakout boards. Sixty LEDs indicate the angle, and colors indicate direction of rotation. A diametrically-magnetized neodymium magnet is included, and a magnet fixture allows the magnet to be positioned on-axis or off axis.
 
 Instructions:
-  1. Download Arduino IDE
-  2. Copy and Paste the corresponding sensor code into Arduino IDE to flash the Arduino Uno
-  3. Attach and Insert the Shield02-Panel into the pinout of the Arduino Uno
-  4. Insert the Sensor Eval Board into the Shield02 insert slot
-  5. Put the plastic casing on top the Shield02
-  6. Place magnet inside of any of the magnet holders.
-  7. Spin the magnet and enjoy the show
-  8. Press the button for different functions
+  1.	Download Arduino IDE
+  2.	Download the sketch for the sensor you are using from this repository.
+  3.	Upload the sketch to an Arduino Uno.
+  4.	Attach and the Shield02 to the Arduino Uno.
+  5.	Insert the breakout board into the Shield02 edge connector.
+  6.	Attach the plastic magnet guide to the Shield02.
+  7.	Place magnet inside one of the magnet holders.
+  8.	Spin the magnet and enjoy the show.
+  9.	Press the button to toggle between different functions.
