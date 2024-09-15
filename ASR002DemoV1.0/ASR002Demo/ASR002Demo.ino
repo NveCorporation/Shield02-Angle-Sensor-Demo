@@ -5,7 +5,7 @@
 //| 9/9/2024
 //| 
 //| Here is the code for NVE's Arduino shield
-//| for the ASR002-10E-EVB01 SPI Angle Sensor 
+//| and the ASR002-10E-EVB01 SPI Angle Sensor 
 //| breakout board. Insert the breakout board
 //| in the card edge connector,  
 //| then attach the plastic magnet fixture. 
