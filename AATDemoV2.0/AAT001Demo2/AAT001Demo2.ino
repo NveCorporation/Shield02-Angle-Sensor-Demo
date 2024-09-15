@@ -16,7 +16,7 @@
 Adafruit_IS31FL3741_QT ledmatrix;
 TwoWire *i2c = &Wire; // I2C interface
 
-const int numLeds = 60; // Number of LEDs in the a
+const int numLeds = 60; // Number of LEDs
 
 // Define your array of LED coordinates as ordered pairs (x, y)
 struct LEDCoordinate {
