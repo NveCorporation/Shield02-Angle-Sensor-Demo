@@ -4,11 +4,11 @@
 //| Author - NVE Coorporation, Sam Weber
 //| 9/9/2024
 //| 
-//| Here is the code for NVE's arduino shield
-//| product with the AAT sensor. Insert the AAT
-//| sensor into its slot then put the plastic 
-//| shield on top. Spin the magnet and see
-//| the purpose and precision for yourself
+//| Here is the code for NVE's Arduino shield
+//| for AAT-Series sensors. Insert the sensor 
+//| breakout board in the card edge connector,  
+//| then attach the plastic magnet fixture. 
+//| Spin the magnet and see the precision.
 //-------------------------------------------------------
 
 #include <Adafruit_IS31FL3741.h>
