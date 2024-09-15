@@ -4,8 +4,8 @@
 //| Author - NVE Coorporation, Sam Weber
 //| 9/9/2024
 //| 
-//| Here is the code for NVE's Arduino shield
-//| for the ASR012-10E-EVB01 I2C Angle Sensor 
+//| Here is the code for NVE's Arduino Shield
+//| and the ASR012-10E-EVB01 I2C Angle Sensor 
 //| breakout board. Insert the breakout board
 //| in the card edge connector,  
 //| then attach the plastic magnet fixture. 
