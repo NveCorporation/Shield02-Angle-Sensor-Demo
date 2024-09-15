@@ -1,14 +1,15 @@
 //-------------------------------------------------------
-//| NVE's Arduino Shield Product Demo's
-//| NVE Off Axis Sensor's - ASR002 Series
+//| NVE's Arduino Shield Product Demo
+//| NVE Off Axis Sensor's - ASR002 SPI Angle Sensor
 //| Author - NVE Coorporation, Sam Weber
 //| 9/9/2024
 //| 
-//| Here is the code for NVE's arduino shield
-//| product with the ASR002 sensor. Insert the ASR002
-//| sensor into its slot then put the plastic 
-//| shield on top. Spin the magnet and see
-//| the functionality and precision
+//| Here is the code for NVE's Arduino shield
+//| for the ASR002-10E-EVB01 SPI Angle Sensor 
+//| breakout board. Insert the breakout board
+//| in the card edge connector,  
+//| then attach the plastic magnet fixture. 
+//| Spin the magnet and see the precision.
 //-------------------------------------------------------
 #include <Adafruit_IS31FL3741.h>
 #include <SPI.h>
