@@ -1,5 +1,5 @@
 //-------------------------------------------------------
-//| NVE's Arduino Shield Product Demo's
+//| NVE's Arduino Shield Product Demo
 //| NVE Off Axis Sensor's - AAT Series
 //| Author - NVE Coorporation, Sam Weber
 //| 9/9/2024
