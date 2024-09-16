@@ -9,7 +9,7 @@
 //| Attach the magnet fixture.
 //| Turn the magnet to see
 //| the sensor’s functionality through
-//| quadrature encoding in quadrants.
+//| quadrature encoding.
 //| 
 //| Sensor connections: 
 //| SIN (digital)11; COS (digital)12;
