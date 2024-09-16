@@ -1,14 +1,16 @@
 //-------------------------------------------------------
-//| NVE's Arduino Shield Product Demo's
-//| NVE Off Axis Sensor's - ASR002 Series
+//| NVE's Arduino Shield Demo
+//| ASR002 
 //| Author - NVE Coorporation, Sam Weber
 //| 9/9/2024
 //| 
-//| Here is the code for NVE's arduino shield
-//| product with the ASR002 sensor. Insert the ASR002
-//| sensor into its slot then put the plastic 
-//| shield on top. Spin the magnet and see
-//| the functionality and precision
+//| Insert the the ASR002 into the Demo, 
+//| then spin the magnet in their slots
+//| to see the demo functions and sensor
+//| precision.
+//| 
+//| Sensor connections: 
+//| SCLK->P13; MISO->P12; MOSI->P11; SS->P10.
 //-------------------------------------------------------
 #include <Adafruit_IS31FL3741.h>
 #include <SPI.h>
