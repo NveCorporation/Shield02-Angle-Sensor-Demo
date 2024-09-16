@@ -1,12 +1,16 @@
 //-------------------------------------------------------
-//| NVE's Arduino Shield Product Demos
-//| NVE Off-Axis Sensors - AAT Series
-//| Author - NVE Corporation, Sam Weber
+//| NVE's Arduino Shield Demo
+//| AAT
+//| Author - NVE Coorporation, Sam Weber
 //| 9/9/2024
-//|
-//| Code for NVE's Arduino shield product with the AAT sensor.
-//| Insert the AAT sensor into its slot, place the plastic 
-//| shield on top, and spin the magnet to observe its precision.
+//| 
+//| Insert the the AAT into the Demo, 
+//| then spin the magnet in their slots
+//| to see the demo functions and sensor
+//| precision.
+//| 
+//| Sensor connections: 
+//| SIN->A3; COS->A1;
 //-------------------------------------------------------
 
 #include <Adafruit_IS31FL3741.h>
