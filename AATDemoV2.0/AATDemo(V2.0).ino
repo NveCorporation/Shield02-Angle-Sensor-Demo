@@ -253,17 +253,46 @@ void initAnalogPins() {
 // Get the smoothed angle from the analog pins (averaging over multiple samples)
 float getSmoothedAngle(int numSamples) {
   float sum = 0;
+  float lastAngle = getAngle();  // Initialize with the first reading
+  float currentAngle;
+
   for (int i = 0; i < numSamples; i++) {
-    sum += getAngle();  // Add up all angle readings
+    currentAngle = getAngle();
+
+    // Handle the 360 to 0 wraparound
+    if (lastAngle > 300 && currentAngle < 60) {
+      // Adjust for wraparound: treat the current angle as if it were above 360
+      currentAngle += 360;
+    } else if (lastAngle < 60 && currentAngle > 300) {
+      // Adjust for wraparound: treat the current angle as if it were below 0
+      currentAngle -= 360;
+    }
+
+    sum += currentAngle;
+    lastAngle = currentAngle;  // Update lastAngle for the next comparison
   }
-  return sum / numSamples;  // Return the average angle
+
+  float averageAngle = sum / numSamples;
+
+  // Normalize the averaged angle back to the 0-360 range
+  if (averageAngle < 0) {
+    averageAngle += 360;
+  } else if (averageAngle >= 360) {
+    averageAngle -= 360;
+  }
+
+  return averageAngle;
 }
+
 
 // Get the current angle from the analog pins (based on sensor data)
 float getAngle() {
-  double cosine = analogRead(A1) * 1.0 - 512;
-  double sine = analogRead(A3) * 1.0 - 512;
-  return (atan2(cosine, sine) * 180.0 / 3.14159) + 180.0;  // Calculate angle and convert to degrees
+  // Read the analog values from the sensor
+  double cosine = (analogRead(A1) - 512.0) / 512.0;  // Normalize to range -1 to 1
+  double sine = (analogRead(A3) - 512.0) / 512.0;    // Normalize to range -1 to 1
+  
+  // Calculate the angle using atan2 (result is in radians, converted to degrees)
+  return (atan2(sine, cosine) * 180.0 / 3.14159) + 180.0;  // Shift angle to 0-360 degrees
 }
 
 // Convert an angle (degrees) to the corresponding LED index
@@ -434,11 +463,3 @@ void lightUpSpeedometer(int ledCount) {
 
   ledmatrix.show();  // Update the display
 }
-
-
-
-
-
-
-
-
