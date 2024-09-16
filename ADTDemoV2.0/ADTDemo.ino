@@ -7,7 +7,7 @@
 //| Insert the the ADT into the Demo, 
 //| then spin the magnet in their slots
 //| to see the demo functions and sensor
-//| precision.
+//| quadrature encoding.
 //| 
 //| Sensor connections: 
 //| SIN (digital)11; COS (digital)12;
