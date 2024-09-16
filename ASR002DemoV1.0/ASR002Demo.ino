@@ -1,17 +1,19 @@
 //-------------------------------------------------------
-//| NVE's Arduino Shield Demo
-//| ASR002 
-//| Author - NVE Coorporation, Sam Weber
+//| NVE Arduino Shield Angle/Rotation sensor demo
+//| ASR002-10 TMR SPI angle sensor
+//| Author - NVE Corporation, Sam Weber
 //| 9/9/2024
 //| 
-//| Insert the the ASR002 into the Demo, 
-//| then spin the magnet in their slots
-//| to see the demo functions and sensor
-//| precision.
+//| Insert an ASR002-10E-EVB01 breakout board
+//| into the Shield edge connector.
+//| Attach the magnet fixture.
+//| Turn the magnet to see
+//| the sensor’s functionality and precision.
 //| 
 //| Sensor connections: 
 //| SCLK->P13; MISO->P12; MOSI->P11; SS->P10.
 //-------------------------------------------------------
+
 #include <Adafruit_IS31FL3741.h>
 #include <SPI.h>
 
