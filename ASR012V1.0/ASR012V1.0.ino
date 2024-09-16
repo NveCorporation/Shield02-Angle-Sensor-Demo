@@ -1,17 +1,19 @@
 //-------------------------------------------------------
-//| NVE's Arduino Shield Demo
-//| ASR012 
-//| Author - NVE Coorporation, Sam Weber
+//| NVE Arduino Shield Angle/Rotation sensor demo
+//| ASR012-10 TMR I2C angle sensor
+//| Author - NVE Corporation, Sam Weber
 //| 9/9/2024
 //| 
-//| Insert the the ASR012 into the Demo, 
-//| then spin the magnet in their slots
-//| to see the demo functions and sensor
-//| precision.
+//| Insert an ASR012-10E-EVB01 breakout board
+//| into the Shield edge connector.
+//| Attach the magnet fixture.
+//| Turn the magnet to see
+//| the sensor’s functionality and precision.
 //| 
 //| Sensor connections: 
 //| SCL 12; SDA 11; (Using Softwire not default I2C pins)
 //-------------------------------------------------------
+
 #include <Adafruit_IS31FL3741.h>
 #include <SoftwareWire.h> // Include the SoftwareWire library for software I²C communication
 
