@@ -1,15 +1,16 @@
 //-------------------------------------------------------
-//| NVE's Arduino Shield Product Demo
-//| NVE Off Axis Sensor's - ASR012 I2C Angle Sensor
+//| NVE's Arduino Shield Demo
+//| ASR012 
 //| Author - NVE Coorporation, Sam Weber
 //| 9/9/2024
 //| 
-//| Here is the code for NVE's Arduino Shield
-//| and the ASR012-10E-EVB01 I2C Angle Sensor 
-//| breakout board. Insert the breakout board
-//| in the card edge connector,  
-//| then attach the plastic magnet fixture. 
-//| Spin the magnet and see the precision.
+//| Insert the the ASR012 into the Demo, 
+//| then spin the magnet in their slots
+//| to see the demo functions and sensor
+//| precision.
+//| 
+//| Sensor connections: 
+//| SCL 12; SDA 11; (Using Softwire not default I2C pins)
 //-------------------------------------------------------
 #include <Adafruit_IS31FL3741.h>
 #include <SoftwareWire.h> // Include the SoftwareWire library for software I²C communication
