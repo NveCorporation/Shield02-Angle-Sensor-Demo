@@ -1,13 +1,16 @@
 //-------------------------------------------------------
-//| NVE's Arduino Shield Product Demos
-//| NVE Off Axis Sensors - ALT-521 Series
-//| Author - NVE Corporation, Sam Weber
+//| NVE's Arduino Shield Demo
+//| ALT-521 
+//| Author - NVE Coorporation, Sam Weber
 //| 9/9/2024
 //| 
-//| Code for NVE's Arduino shield product with the ALT-521 sensor.
-//| Insert the ALT-521 sensor into its slot, place the plastic 
-//| shield on top, and spin the magnet to observe the functionality.
-//| This demo includes a brightness feature based on magnetic field strength.
+//| Insert the the ALT-521 into the Demo, 
+//| then spin the magnet in their slots
+//| to see the demo functions and sensor
+//| precision.
+//| 
+//| Sensor connections: 
+//| SIN A3; COS A1;
 //-------------------------------------------------------
 
 #include <Adafruit_IS31FL3741.h>
