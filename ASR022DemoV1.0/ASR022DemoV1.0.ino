@@ -88,7 +88,7 @@ void ASR022Master(){
 
     // Convert angle to LED position (each LED represents 6 degrees)
     // Convert angle to LED position (each LED represents 6 degrees)
-int ledIndex = (angle / 6) % numLeds;  // Ensures ledIndex stays within 0 to 59
+    int ledIndex = (angle / 6) % numLeds;  // Ensures ledIndex stays within 0 to 59
 
     // Update LED display based on the calculated LED position
     updateLEDDisplay(ledIndex);
