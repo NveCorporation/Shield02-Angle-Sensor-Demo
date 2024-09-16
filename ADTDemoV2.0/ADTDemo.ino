@@ -1,17 +1,21 @@
 //-------------------------------------------------------
-//| NVE's Arduino Shield Demo
-//| ADT 
-//| Author - NVE Coorporation, Sam Weber
+//| NVE Arduino Shield Angle/Rotation sensor demo
+//| ADT-10 TMR SPI angle sensor
+//| Author - NVE Corporation, Sam Weber
 //| 9/9/2024
 //| 
-//| Insert the the ADT into the Demo, 
-//| then spin the magnet in their slots
-//| to see the demo functions and sensor
-//| quadrature encoding.
+//| Insert an ADT-10E-EVB01 breakout board
+//| into the Shield edge connector.
+//| Attach the magnet fixture.
+//| Turn the magnet to see
+//| the sensor’s functionality through
+//| quadrature encoding in quadrants.
 //| 
 //| Sensor connections: 
 //| SIN (digital)11; COS (digital)12;
 //-------------------------------------------------------
+ 
+
 #include <Adafruit_IS31FL3741.h>
 
 Adafruit_IS31FL3741_QT ledmatrix;
