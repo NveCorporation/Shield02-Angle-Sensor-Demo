@@ -1,45 +1,48 @@
 //-------------------------------------------------------
 //| NVE's Arduino Shield Product Demos
-//| NVE Off Axis Sensors - ALT-521 Series
+//| NVE Off-Axis Sensors - AAT Series
 //| Author - NVE Corporation, Sam Weber
 //| 9/9/2024
-//| 
-//| Code for NVE's Arduino shield product with the ALT-521 sensor.
-//| Insert the ALT-521 sensor into its slot, place the plastic 
-//| shield on top, and spin the magnet to observe the functionality.
-//| This demo includes a brightness feature based on magnetic field strength.
+//|
+//| Code for NVE's Arduino shield product with the AAT sensor.
+//| Insert the AAT sensor into its slot, place the plastic 
+//| shield on top, and spin the magnet to observe its precision.
 //-------------------------------------------------------
 
 #include <Adafruit_IS31FL3741.h>
 
-Adafruit_IS31FL3741_QT ledmatrix; // Initialize the LED matrix object
-TwoWire *i2c = &Wire; // I2C interface
+Adafruit_IS31FL3741_QT ledmatrix;
+TwoWire *i2c = &Wire; // I2C interface for LED matrix
 
-const int numLeds = 60; // Number of LEDs in the array
+// Constants and Definitions
+const int numLeds = 60;  // Total number of LEDs
 
-// Define an array of LED coordinates as (x, y) pairs
+// Struct to define LED coordinates as (x, y)
 struct LEDCoordinate {
   int x;
   int y;
 };
 
-// Variables for button press debounce and state toggling
-volatile int toggleState = 0; // Variable to toggle between functions
-volatile unsigned long lastDebounceTime = 0; // To store the last debounce time
-const unsigned long debounceDelay = 50; // Debounce time in milliseconds
+// State and Debounce Variables
+volatile int toggleStateAAT = 0;         // Toggle between functions
+volatile unsigned long lastDebounceTime = 0; 
+const unsigned long debounceDelay = 50;   // Debounce time for button press
+const int buttonPin = 2;                  // Pin for the interrupt (Digital Pin 2)
 
-const int buttonPin = 2; // Pin for the button interrupt (Digital Pin 2)
-
-// Variables for controlling the state of LED effects and angles
-bool firstIterationToggle = true;
+// Timing Variables
 unsigned long lastUpdateTime = 0;
 unsigned long updateInterval = 0;
+unsigned long previousMillis = 0;
+const unsigned long interval = 1000;      // 1 second interval for stability check
+
+// LED Control Variables
 int currentLEDIndex = 0;
 int previousLEDs[5] = {-1, -1, -1, -1, -1}; // Store the last 5 LEDs for comet effect
 float previousAngle = 0;
 float currentAngle = 0;
+bool firstIterationToggle = true;
 
-// Define an array of LED coordinates
+// LED Matrix Coordinates
 LEDCoordinate ledCoordinates[numLeds] = {
     {0, 8}, {0, 7}, {0, 6}, {0, 5}, {0, 4}, {0, 3}, {0, 2}, {0, 1}, {0, 0},
     {1, 8}, {1, 7}, {1, 6}, {1, 5}, {1, 4}, {1, 3}, {1, 2}, {1, 1}, {1, 0},
@@ -50,161 +53,192 @@ LEDCoordinate ledCoordinates[numLeds] = {
     {6, 8}, {6, 7}, {6, 6}, {6, 5}, {6, 4}, {6, 3}
 };
 
-// Time tracking variables for flashing effect
-unsigned long previousMillis = 0;
-const unsigned long interval = 1000; // 1 second interval for LED stability checks
-
-// Setup function: Initializes the LED matrix, button interrupt, and analog pins
+// -------------------------------------------------------
+// Setup: Initialize serial communication, button interrupt, and LED matrix
+// -------------------------------------------------------
 void setup() {
   Serial.begin(115200);
   Serial.println("Adafruit QT RGB Matrix LED Walker");
-  
-  // Attach an interrupt to the button pin to toggle between states
+
+  // Setup interrupt for button press
   attachInterrupt(digitalPinToInterrupt(buttonPin), toggleStateISR, FALLING);
-  
-  // Initialize the LED matrix
+
+  // Initialize LED matrix
   if (!ledmatrix.begin(IS3741_ADDR_DEFAULT, i2c)) {
     Serial.println("IS41 not found");
-    while (1); // Stop execution if matrix initialization fails
+    while (1);  // Halt if matrix initialization fails
   }
   Serial.println("IS41 found!");
-  
-  // Set I2C clock speed
-  i2c->setClock(800000);
+  i2c->setClock(800000);    // Set I2C clock speed
 
-  // Set up LED scaling and global current for brightness control
-  ledmatrix.setLEDscaling(0xFF); // Maximum LED scaling
-  ledmatrix.setGlobalCurrent(0xFF); // Maximum global current (brightness)
+  // Configure LED settings
+  ledmatrix.setLEDscaling(0xFF);
+  ledmatrix.setGlobalCurrent(0xFF);
+  ledmatrix.enable(true);
   Serial.print("Global current set to: ");
   Serial.println(ledmatrix.getGlobalCurrent());
-  
-  ledmatrix.enable(true); // Enable the LED matrix
-  
-  // Initialize analog pins as inputs for the magnetic field sensor
+
+  // Initialize analog pins for sensor inputs
   initAnalogPins();
 }
 
-// Main loop: Executes the corresponding function based on the toggle state
+// -------------------------------------------------------
+// Main Loop: Executes different functions based on toggleStateAAT
+// -------------------------------------------------------
 void loop() {  
   if (firstIterationToggle) {
-    turnOffAllQuadrants(); // Turn off all LEDs after the first iteration
-    firstIterationToggle = false;
+    turnOffAllQuadrants();      
+    firstIterationToggle = false;  // Reset after the first iteration
   }
   
-  // Check the toggle state and call the corresponding function
-  switch (toggleState) {
+  switch (toggleStateAAT) {
     case 0:
-      function1Flashing(); // Flashing LED based on the current angle
+      function1Flashing();        // Function to display the current angle on the LED panel
       break;
     case 1:
-      function2CountCycles(); // Full revolution tracking and color change
+      function2CountCycles();     // Count full revolutions and change color on each cycle
       break;
     case 2:
-      Serial.println("Case 2");
-      function3(); // Comet trail effect based on rotation speed
+      function3();                // Function with precision position and color changes based on speed
       break;
     case 3:
-      Serial.println("Case 3");
-      function4(); // Speedometer-style display based on speed
+      function4();                // Speedometer display with LED color transitions
+      break;
   }
-
-  // Adjust brightness based on the magnetic field strength
-  int8_t magnetifFieldRationalized = brightnessSetter();
-  ledmatrix.setLEDscaling(magnetifFieldRationalized); // Scale brightness
-  ledmatrix.setGlobalCurrent(magnetifFieldRationalized * 2); // Set global brightness
 }
 
-// Button ISR: Toggles between states when the button is pressed
+// -------------------------------------------------------
+// Interrupt Service Routine: Handles button presses to toggle between functions
+// -------------------------------------------------------
 void toggleStateISR() {
   unsigned long currentTime = millis(); 
-  // Check if debounce delay has passed
-  if ((currentTime - lastDebounceTime) > debounceDelay) {
-    lastDebounceTime = currentTime; // Update debounce time
-    firstIterationToggle = true; // Reset toggle flag
+  if ((currentTime - lastDebounceTime) > debounceDelay) {  // Debounce check
+    lastDebounceTime = currentTime;
+    firstIterationToggle = true;  // Reset on state change
     
-    // Cycle through the states (0-3)
-    toggleState = (toggleState < 3) ? toggleState + 1 : 0;
+    // Cycle through 4 states (0-3)
+    toggleStateAAT = (toggleStateAAT + 1) % 4;
 
     // Debugging output
     Serial.print("toggleState updated to: ");
-    Serial.println(toggleState);
+    Serial.println(toggleStateAAT);
   }
 }
 
-// Function 1: Displays a flashing effect based on the current angle
+// -------------------------------------------------------
+// Function 1: Displays current angle with flashing effect based on stability
+// -------------------------------------------------------
 void function1Flashing() {
   static uint16_t hue_offset = 0;
   static int previousIndex = -1;
   static float previousAngle = 0;
 
-  // Get the current smoothed angle
-  float currentAngle = getSmoothedAngle(25); 
+  float currentAngle = getSmoothedAngle(50); // Smoothed sensor angle
+  int ledIndex = degreeToLED(currentAngle);  // Convert angle to LED index
 
-  // Get the corresponding LED index based on the angle
-  int ledIndex = degreeToLED(currentAngle);
-
-  // Update the hue offset based on the direction of movement
+  // Update hue based on movement direction
   hue_offset = updateHueOffset(currentAngle, previousAngle, hue_offset);
 
-  // Check for LED stability and trigger flashing if necessary
+  // Stability check to flash LEDs if unchanged for a certain interval
   handleStabilityAndFlashing(ledIndex, previousIndex);
 
-  // Update the LED colors and display
+  // Update LED display with new colors
   updateLEDDisplay(ledIndex, hue_offset, previousIndex);
 
-  // Update previous values for the next loop iteration
+  // Store previous values for the next iteration
   previousIndex = ledIndex;
   previousAngle = currentAngle;
 
-  delay(15); // Control speed of LED flashing
+  delay(15);  // Adjust delay for flashing speed
 }
 
-// Function 2: Changes the background color of the entire LED matrix on each full revolution
+// -------------------------------------------------------
+// Function 2: Counts full revolutions and changes LED colors accordingly
+// -------------------------------------------------------
 void function2CountCycles() {
   static int previousIndex = -1;
   static float previousAngle = 0;
   static uint16_t backgroundHue = 0;  // Hue value for background color
 
-  // Get the current smoothed angle
-  float currentAngle = getSmoothedAngle(50); 
+  float currentAngle = getSmoothedAngle(50);  // Smoothed sensor angle
+  int ledIndex = degreeToLED(currentAngle);   // Get corresponding LED index
 
-  // Get the corresponding LED index
-  int ledIndex = degreeToLED(currentAngle);
-
-  // Check for a full revolution (clockwise)
+  // Check for a full clockwise revolution (angle crosses from 360 to 0)
   if (previousAngle > 335 && currentAngle < 25) { 
-    backgroundHue += 4368; // Increment hue value
+    backgroundHue += 4368;  // Increment hue value for clockwise revolution
     if (backgroundHue >= 65536) {
-      backgroundHue = 0; // Wrap around hue value
+      backgroundHue = 0;    // Wrap hue back to 0 if it exceeds maximum
     }
     Serial.println("Full revolution clockwise! Hue incremented.");
   }
-  // Check for a full revolution (counterclockwise)
+  // Check for a full counterclockwise revolution (angle crosses from 0 to 360)
   else if (previousAngle < 25 && currentAngle > 335) {
     backgroundHue = (backgroundHue < 4368) ? 65536 - (4368 - backgroundHue) : backgroundHue - 4368;
     Serial.println("Full revolution counterclockwise! Hue decremented.");
   }
 
-  // Set the background color for the LED matrix
+  // Set background color based on hue
   uint16_t backgroundColor = ledmatrix.color565(ledmatrix.ColorHSV(backgroundHue));
 
-  // Set each LED to the background color except the one corresponding to the current angle
+  // Turn on all LEDs with background color, except the one corresponding to the current angle
   for (int i = 0; i < numLeds; i++) {
     if (i == ledIndex) {
-      ledmatrix.drawPixel(ledCoordinates[i].x, ledCoordinates[i].y, ledmatrix.color565(255, 255, 255)); // Set current angle LED to white
+      ledmatrix.drawPixel(ledCoordinates[i].x, ledCoordinates[i].y, ledmatrix.color565(255, 255, 255));  // Current angle LED: white
     } else {
-      ledmatrix.drawPixel(ledCoordinates[i].x, ledCoordinates[i].y, backgroundColor); // Set background color for other LEDs
+      ledmatrix.drawPixel(ledCoordinates[i].x, ledCoordinates[i].y, backgroundColor);  // Background color for other LEDs
     }
   }
 
-  ledmatrix.show(); // Update the LED matrix display
+  // Update the display
+  ledmatrix.show();
 
-  // Update previous values for the next loop iteration
+  // Store previous values for the next iteration
   previousIndex = ledIndex;
   previousAngle = currentAngle;
 
-  delay(15); // Control speed of LED color change
+  delay(15);  // Adjust delay for revolution speed
 }
+
+// -------------------------------------------------------
+// Function 3: Precision position display with color changes based on speed
+// -------------------------------------------------------
+void function3() {
+  float currentAngle = getSmoothedAngle(50);  // Get the current angle
+  int ledIndex = degreeToLED(currentAngle);   // Convert angle to LED index
+
+  if (ledIndex != currentLEDIndex) {  // Only update if the LED index has changed
+    unsigned long currentTime = millis();
+    updateInterval = currentTime - lastUpdateTime;  // Time since last update
+    lastUpdateTime = currentTime;
+
+    // Update the comet trail effect with speed-based color
+    updateCometTrail(ledIndex);
+
+    // Update current LED index for the next loop iteration
+    currentLEDIndex = ledIndex;
+  }
+}
+
+// -------------------------------------------------------
+// Function 4: Speedometer effect using LED transitions from green to red
+// -------------------------------------------------------
+void function4() {
+  currentAngle = getSmoothedAngle(50);   // Get the current angle
+  float angleDifference = abs(currentAngle - previousAngle);  // Calculate angle difference (speed)
+
+  int ledCount = determineLEDCount(angleDifference);  // Determine how many LEDs to light based on speed
+
+  // Light up the speedometer with transitioning colors
+  lightUpSpeedometer(ledCount);
+
+  previousAngle = currentAngle;  // Update the previous angle for the next iteration
+
+  delay(15);  // Adjust delay for speedometer refresh rate
+}
+
+// -------------------------------------------------------
+// Utility Functions: These functions handle supporting tasks such as calculating angles, updating displays, etc.
+// -------------------------------------------------------
 
 // Initialize analog pins for sensor input
 void initAnalogPins() {
@@ -216,7 +250,7 @@ void initAnalogPins() {
   pinMode(A5, INPUT);
 }
 
-// Get the smoothed angle based on the sensor readings, averaging over multiple samples
+// Get the smoothed angle from the analog pins (averaging over multiple samples)
 float getSmoothedAngle(int numSamples) {
   float sum = 0;
   float lastAngle = getAngle();  // Initialize with the first reading
@@ -225,18 +259,20 @@ float getSmoothedAngle(int numSamples) {
   for (int i = 0; i < numSamples; i++) {
     currentAngle = getAngle();
 
-    // Handle the 360 to 0 wraparound for angle transition
+    // Handle the 360 to 0 wraparound
     if (lastAngle > 300 && currentAngle < 60) {
-      currentAngle += 360; // Adjust wraparound to handle transition smoothly
+      // Adjust for wraparound: treat the current angle as if it were above 360
+      currentAngle += 360;
     } else if (lastAngle < 60 && currentAngle > 300) {
-      currentAngle -= 360; // Adjust wraparound for transition back to 0
+      // Adjust for wraparound: treat the current angle as if it were below 0
+      currentAngle -= 360;
     }
 
     sum += currentAngle;
-    lastAngle = currentAngle; // Update for the next comparison
+    lastAngle = currentAngle;  // Update lastAngle for the next comparison
   }
 
-  float averageAngle = sum / numSamples; // Average angle over all samples
+  float averageAngle = sum / numSamples;
 
   // Normalize the averaged angle back to the 0-360 range
   if (averageAngle < 0) {
@@ -245,55 +281,59 @@ float getSmoothedAngle(int numSamples) {
     averageAngle -= 360;
   }
 
-  return averageAngle; // Return the smoothed angle
+  return averageAngle;
 }
 
-// Get the raw angle from the analog inputs (A1 and A3) and calculate the angle in degrees
+
+// Get the current angle from the analog pins (based on sensor data)
 float getAngle() {
-  double cosine = analogRead(A1) * 1.0 - 512; // Normalize analog reading to -512 to 512
-  double sine = analogRead(A3) * 1.0 - 512;   // Normalize analog reading to -512 to 512
-  return (atan2(cosine, sine) * 180.0 / 3.14159) + 180.0; // Convert radians to degrees, shift to 0-360 degrees
+  // Read the analog values from the sensor
+  double cosine = (analogRead(A1) - 512.0) / 512.0;  // Normalize to range -1 to 1
+  double sine = (analogRead(A3) - 512.0) / 512.0;    // Normalize to range -1 to 1
+  
+  // Calculate the angle using atan2 (result is in radians, converted to degrees)
+  return (atan2(sine, cosine) * 180.0 / 3.14159) + 180.0;  // Shift angle to 0-360 degrees
 }
 
-// Convert an angle in degrees to the corresponding LED index
+// Convert an angle (degrees) to the corresponding LED index
 int degreeToLED(float degree) {
-  degree = fmod(degree, 360);  // Normalize degree to 0-359
+  degree = fmod(degree, 360);  // Normalize angle to 0-359 degrees
   if (degree < 0) degree += 360;
-  return degree / 6;  // Map 360 degrees to 60 LEDs (6 degrees per LED)
+  return degree / 6;  // 360 degrees / 60 LEDs = 6 degrees per LED
 }
 
-// Update the hue offset based on the movement direction
+// Update hue offset based on rotation direction
 uint16_t updateHueOffset(float currentAngle, float previousAngle, uint16_t hue_offset) {
   if (currentAngle > previousAngle) {
-    hue_offset += 1092;  // Increase hue for clockwise movement
+    hue_offset += 1092;  // Clockwise rotation
   } else if (currentAngle < previousAngle) {
-    hue_offset -= 1092;  // Decrease hue for counterclockwise movement
+    hue_offset -= 1092;  // Counterclockwise rotation
   }
   return hue_offset;
 }
 
-// Check if the LED index is stable, and flash the LEDs if it hasn't changed for a while
+// Handle stability check: if LED position unchanged, trigger flashing effect
 void handleStabilityAndFlashing(int ledIndex, int previousIndex) {
   if (ledIndex == previousIndex) {
     unsigned long currentMillis = millis();
     if (currentMillis - previousMillis >= interval) {
-      Serial.println("LED position unchanged for 3 seconds! Flashing LEDs...");
-      flashLEDs(ledIndex); // Flash LEDs if no movement for 3 seconds
-      previousMillis = currentMillis; // Reset the timer
+      Serial.println("LED position unchanged for 1 second! Flashing LEDs...");
+      flashLEDs(ledIndex);  // Trigger flashing if position is stable
+      previousMillis = currentMillis;  // Reset timer
     }
   } else {
-    previousMillis = millis(); // Reset timer if position changed
+    previousMillis = millis();  // Reset timer if position changed
   }
 }
 
-// Update the LED display with the new color based on the angle and hue
+// Update the LED matrix display with new colors
 void updateLEDDisplay(int ledIndex, uint16_t hue_offset, int previousIndex) {
-  uint32_t color888 = ledmatrix.ColorHSV(hue_offset);   // Get color based on hue offset
+  uint32_t color888 = ledmatrix.ColorHSV(hue_offset);   // Get HSV color based on hue offset
   uint16_t color565 = ledmatrix.color565(color888);     // Convert 888 color to 565 format
 
-  ledmatrix.drawPixel(ledCoordinates[ledIndex].x, ledCoordinates[ledIndex].y, color565);  // Turn on the current LED
+  ledmatrix.drawPixel(ledCoordinates[ledIndex].x, ledCoordinates[ledIndex].y, color565);  // Turn on current LED
 
-  // Turn off the previous LED if it was different
+  // Turn off previous LED if necessary
   if (previousIndex >= 0 && previousIndex != ledIndex) {
     turnOffPreviousLED(previousIndex);
   }
@@ -304,95 +344,77 @@ void turnOffPreviousLED(int prevIndex) {
   ledmatrix.drawPixel(ledCoordinates[prevIndex].x, ledCoordinates[prevIndex].y, 0);  // Turn off previous LED
 }
 
-// Flash the LEDs for the stability effect (triggered if position is unchanged)
+// Flash LEDs for stability effect (triggered if position is unchanged)
 void flashLEDs(int ledIndex) {
-  int flashDelay = 15; // Delay between flashes
+  int flashDelay = 15;  // Delay between flashes
 
   for (int j = 0; j < 10; j++) {  // Flash sequence for 10 LEDs
-    int currentLedIndex = degreeToLED(getSmoothedAngle(50));  // Check if position has changed during flash
+    int currentLedIndex = degreeToLED(getSmoothedAngle(50));  // Check if position changed during flash
     if (currentLedIndex != ledIndex) {
       Serial.println("Position changed during flash, stopping flash...");
-      return;  // Stop flashing if the position has changed
+      return;  // Stop flash if position changes
     }
 
-    int forwardIndex = (ledIndex + 10 - j + numLeds) % numLeds; // Forward LED index
-    int backwardIndex = (ledIndex - 10 + j + numLeds) % numLeds; // Backward LED index
+    int forwardIndex = (ledIndex + 10 - j + numLeds) % numLeds;
+    int backwardIndex = (ledIndex - 10 + j + numLeds) % numLeds;
 
-    // Turn on the forward and backward LEDs with red color
+    // Turn on forward and backward LEDs with green color
     ledmatrix.drawPixel(ledCoordinates[forwardIndex].x, ledCoordinates[forwardIndex].y, ledmatrix.color565(255, 0, 0));
     ledmatrix.drawPixel(ledCoordinates[backwardIndex].x, ledCoordinates[backwardIndex].y, ledmatrix.color565(255, 0, 0));
-    ledmatrix.show(); // Update the LED matrix
+    ledmatrix.show();
     delay(flashDelay);
 
-    // Turn off the forward and backward LEDs
+    // Turn off forward and backward LEDs
     ledmatrix.drawPixel(ledCoordinates[forwardIndex].x, ledCoordinates[forwardIndex].y, 0);
     ledmatrix.drawPixel(ledCoordinates[backwardIndex].x, ledCoordinates[backwardIndex].y, 0);
-    ledmatrix.show(); // Update the LED matrix
+    ledmatrix.show();
     delay(flashDelay);
   }
 }
 
-// Turn off all LEDs in the matrix
+// Turn off all LEDs
 void turnOffAllQuadrants() {
   for (int i = 0; i < numLeds; i++) {
-    ledmatrix.drawPixel(ledCoordinates[i].x, ledCoordinates[i].y, ledmatrix.color565(0, 0, 0)); // Turn off LED
+    int x = ledCoordinates[i].x;
+    int y = ledCoordinates[i].y;
+    ledmatrix.drawPixel(x, y, ledmatrix.color565(0, 0, 0));  // Turn off LED
   }
 }
 
-// Function 3: Comet trail effect based on rotation speed
-void function3() {
-  // Get the current angle
-  float currentAngle = getSmoothedAngle(50); 
+// -------------------------------------------------------
+// Speedometer and Comet Effect Functions
+// -------------------------------------------------------
 
-  // Calculate the LED index based on the angle
-  int ledIndex = degreeToLED(currentAngle);
-
-  // Only update if the LED index has changed
-  if (ledIndex != currentLEDIndex) {
-    // Calculate the time since the last update
-    unsigned long currentTime = millis();
-    updateInterval = currentTime - lastUpdateTime;
-    lastUpdateTime = currentTime;
-
-    // Update the comet trail with speed-based color
-    updateCometTrail(ledIndex);
-
-    // Update the current LED index for the next loop
-    currentLEDIndex = ledIndex;
-  }
-}
-
-// Update the comet trail with speed-based color
+// Update comet trail with speed-based color
 void updateCometTrail(int ledIndex) {
-  // Shift the previous LED indices to make room for the new one
   for (int i = 4; i > 0; i--) {
-    previousLEDs[i] = previousLEDs[i - 1];
+    previousLEDs[i] = previousLEDs[i - 1];  // Shift previous LED indices
   }
+  previousLEDs[0] = ledIndex;  // Add current LED to the trail
 
-  // Add the current LED index to the trail
-  previousLEDs[0] = ledIndex;
-
-  // Turn off the LED at the end of the trail
   if (previousLEDs[4] != -1) {
-    ledmatrix.drawPixel(ledCoordinates[previousLEDs[4]].x, ledCoordinates[previousLEDs[4]].y, 0); // Turn off the LED
+    int x = ledCoordinates[previousLEDs[4]].x;
+    int y = ledCoordinates[previousLEDs[4]].y;
+    ledmatrix.drawPixel(x, y, ledmatrix.color565(0, 0, 0));  // Turn off LED at end of tail
   }
 
-  // Get the color based on the speed of rotation
+  // Determine LED color based on rotation speed
   uint16_t color = getColorBasedOnSpeed(updateInterval);
 
-  // Draw the new LED with the calculated color
-  ledmatrix.drawPixel(ledCoordinates[ledIndex].x, ledCoordinates[ledIndex].y, color);
-  ledmatrix.show(); // Update the display
+  // Draw the current LED with the calculated color
+  int x = ledCoordinates[ledIndex].x;
+  int y = ledCoordinates[ledIndex].y;
+  ledmatrix.drawPixel(x, y, color);
+
+  ledmatrix.show();  // Update the display
 }
 
-// Get the color based on the speed of rotation
+// Get color based on rotation speed
 uint16_t getColorBasedOnSpeed(unsigned long interval) {
-  // Define speed thresholds (in milliseconds)
   const unsigned long slowThreshold = 35;
   const unsigned long mediumThreshold = 24;
   const unsigned long fastThreshold = 19;
 
-  // Return color based on speed thresholds
   if (interval > slowThreshold) {
     return ledmatrix.color565(255, 0, 0);  // Green for slow speed
   } else if (interval > mediumThreshold) {
@@ -402,80 +424,42 @@ uint16_t getColorBasedOnSpeed(unsigned long interval) {
   }
 }
 
-// Function 4: Speedometer effect using color transitions
-void function4() {
-  currentAngle = getSmoothedAngle(50);   // Get the current angle
-  float angleDifference = abs(currentAngle - previousAngle);  // Calculate the angle difference (speed)
-
-  int ledCount = determineLEDCount(angleDifference);  // Determine how many LEDs to light up based on speed
-
-  // Light up the LEDs with transitioning colors
-  lightUpSpeedometer(ledCount);
-
-  previousAngle = currentAngle;  // Update the previous angle for the next loop
-
-  delay(15); // Adjust delay for speedometer refresh rate
-}
-
-// Determine how many LEDs to light up based on the speed (angle difference)
+// Determine the number of LEDs to light up based on speed
 int determineLEDCount(float angleDifference) {
   if (angleDifference < 12.0) {
-    return map(angleDifference, 0, 12, 0, 19); // Bottom 20 LEDs (Green to Yellow)
+    return map(angleDifference, 0, 12, 0, 19);  // Bottom 20 LEDs (Green to Yellow)
   } else if (angleDifference < 24.0) {
-    return map(angleDifference, 12, 24, 20, 39); // Middle 20 LEDs (Yellow to Orange)
+    return map(angleDifference, 12, 24, 20, 39);  // Middle 20 LEDs (Yellow to Orange)
   } else {
-    return map(angleDifference, 24, 36, 40, 59); // Top 20 LEDs (Orange to Red)
+    return map(angleDifference, 24, 36, 40, 59);  // Top 20 LEDs (Orange to Red)
   }
 }
 
-// Light up the speedometer LEDs with transitioning colors
+// Light up the speedometer with transitioning colors based on speed
 void lightUpSpeedometer(int ledCount) {
-  turnOffAllQuadrants(); // Turn off all LEDs before lighting up the speedometer
+  turnOffAllQuadrants();  // Turn off all LEDs before lighting up new section
 
   for (int i = 0; i < ledCount; i++) {
     int x = ledCoordinates[i].x;
     int y = ledCoordinates[i].y;
 
-    // Transition colors based on the position in the array
     uint16_t color;
     if (i < 20) {
-      int r = map(i, 0, 19, 0, 255); // Transition from green to yellow
+      int r = map(i, 0, 19, 0, 255);  // Transition from green to yellow
       int g = 255;
       color = ledmatrix.color565(g, 0, r);
     } else if (i < 40) {
       int r = 255;
-      int g = map(i, 20, 39, 255, 165); // Transition from yellow to orange
+      int g = map(i, 20, 39, 255, 165);  // Transition from yellow to orange
       color = ledmatrix.color565(g, 0, r);
     } else {
       int r = 255;
-      int g = map(i, 40, 59, 165, 0); // Transition from orange to red
+      int g = map(i, 40, 59, 165, 0);  // Transition from orange to red
       color = ledmatrix.color565(g, 0, r);
     }
 
-    ledmatrix.drawPixel(x, y, color); // Draw the pixel with the calculated color
+    ledmatrix.drawPixel(x, y, color);  // Draw pixel with the calculated color
   }
 
-  ledmatrix.show(); // Update the LED matrix display
-}
-
-// Calculate the hypotenuse (magnitude) of the magnetic field vector
-float calculateHypotenuse(float sinValue, float cosValue) {
-  return sqrt(sinValue * sinValue + cosValue * cosValue); // Use Pythagorean theorem to calculate hypotenuse
-}
-
-// Set the brightness based on the strength of the magnetic field
-int brightnessSetter() {
-  // Calculate the magnetic field strength as the hypotenuse of the sine and cosine readings
-  float c = calculateHypotenuse(analogRead(1), analogRead(3));
-
-  // Map the calculated value to a brightness level
-  int brightness = (c - 500) / 4;
-  
-  // Ensure the brightness does not go below a minimum threshold
-  if (brightness <= 20) {
-    brightness = 20;
-  }
-
-  Serial.println(brightness); // Print the brightness value for debugging
-  return brightness;
-}
+  ledmatrix.show();  // Update the display
+} 
