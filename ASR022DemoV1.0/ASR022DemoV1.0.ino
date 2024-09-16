@@ -87,7 +87,8 @@ void ASR022Master(){
     int angle = map(counter, 0, 255, 0, 360);
 
     // Convert angle to LED position (each LED represents 6 degrees)
-    int ledIndex = angle / 6;
+    // Convert angle to LED position (each LED represents 6 degrees)
+int ledIndex = (angle / 6) % numLeds;  // Ensures ledIndex stays within 0 to 59
 
     // Update LED display based on the calculated LED position
     updateLEDDisplay(ledIndex);
@@ -98,7 +99,9 @@ void ASR022Master(){
     Serial.print(" | Angle: ");
     Serial.print(angle);
     Serial.print(" | LED Index: ");
-    Serial.println(ledIndex);
+    Serial.print(ledIndex);
+    Serial.print(" | Values: ");
+    
   }
 }
 
@@ -111,7 +114,8 @@ void updateLEDDisplay(int position) {
   // Get the LED coordinates from the custom array
   int x = ledCoordinates[position].x;
   int y = ledCoordinates[position].y;
-
+  Serial.println(String(ledCoordinates[position].x) + " " + String(ledCoordinates[position].y));
+  
   // Turn on the LED at the calculated position
   setLED(x, y, true);
 
