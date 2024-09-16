@@ -1,17 +1,22 @@
 //-------------------------------------------------------
-//| NVE's Arduino Shield Demo
-//| ALT-521 
-//| Author - NVE Coorporation, Sam Weber
+//| NVE Arduino Shield Angle/Rotation sensor demo
+//| ALT521-10 TMR SPI angle sensor
+//| Author - NVE Corporation, Sam Weber
 //| 9/9/2024
 //| 
-//| Insert the the ALT-521 into the Demo, 
-//| then spin the magnet in their slots
-//| to see the demo functions and sensor
-//| precision.
+//| Insert an ALT521-10E-EVB01 breakout board
+//| into the Shield edge connector.
+//| Attach the magnet fixture.
+//| Turn the magnet to see
+//| the sensor’s functionality and precision.
+//| Additionally the ALT521 has a magnetic field
+//| strength function represented by LED brightness
 //| 
 //| Sensor connections: 
 //| SIN A3; COS A1;
 //-------------------------------------------------------
+
+
 
 #include <Adafruit_IS31FL3741.h>
 
