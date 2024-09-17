@@ -1,4 +1,3 @@
-# Shield02-Off-Axis-Sensor-Panel
 Arduino Uno Shield02 demonstrates NVE ALT521 or AAT-, ADT- and ASR-Series angle/rotation sensors. The Shield shows how our sensors are limited only by your imagination.
 
 The Shield connects via an edge connector to the breakout board above or other breakout boards. Sixty LEDs indicate the angle, and colors indicate direction of rotation. A diametrically-magnetized neodymium magnet is included, and a magnet fixture allows the magnet to be positioned on-axis or off axis.
