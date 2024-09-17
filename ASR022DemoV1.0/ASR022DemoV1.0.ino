@@ -98,6 +98,9 @@ void ASR022Master(){
     updateLEDDisplay(ledIndex);
 
     // Print the counter and angle for debugging
+
+    
+    /** Remove the /** and *_/ on lines 103 and 111 if you want to print out information. 
     Serial.print("Counter: ");
     Serial.print(counter);
     Serial.print(" | Angle: ");
@@ -105,7 +108,7 @@ void ASR022Master(){
     Serial.print(" | LED Index: ");
     Serial.print(ledIndex);
     Serial.print(" | Values: ");
-    
+    */
   }
 }
 
@@ -162,5 +165,3 @@ int wrapCounter(int value, int maxValue) {
     return value;
   }
 }
-
-
