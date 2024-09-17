@@ -101,6 +101,7 @@ void ASR022Master(){
 
     
     /** Remove the /** and *_/ on lines 103 and 111 if you want to print out information. 
+    //Note this will slow down the Arduino substantially
     Serial.print("Counter: ");
     Serial.print(counter);
     Serial.print(" | Angle: ");
