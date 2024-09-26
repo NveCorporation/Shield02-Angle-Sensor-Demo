@@ -1,15 +1,14 @@
 //-------------------------------------------------------
 //| NVE Arduino Shield Angle/Rotation sensor demo
-//| ADT-10 TMR SPI angle sensor
+//| ADT002-10 TMR SPI angle sensor
 //| Author - NVE Corporation, Sam Weber
-//| 9/9/2024
+//| 9/26/2024
 //| 
-//| Insert an ADT-10E-EVB01 breakout board
+//| Insert an ADT002-10E-EVB01 breakout board
 //| into the Shield edge connector.
 //| Attach the magnet fixture.
 //| Turn the magnet to see
-//| the sensor’s functionality through
-//| quadrature encoding.
+//| the sensor’s operation.
 //| 
 //| Sensor connections: 
 //| SIN (digital)11; COS (digital)12;
