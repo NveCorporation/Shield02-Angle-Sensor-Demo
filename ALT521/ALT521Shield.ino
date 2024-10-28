@@ -422,11 +422,14 @@ int brightnessSetter() {
   return brightness;
 }
 
-// Get the raw angle from the analog inputs (A1 and A3) and calculate the angle in degrees
+// Get the current angle from the analog pins (based on sensor data)
 float getAngle() {
-  double cosine = analogRead(A1) * 1.0 - 512; // Normalize analog reading to -512 to 512
-  double sine = analogRead(A3) * 1.0 - 512;   // Normalize analog reading to -512 to 512
-  return (atan2(cosine, sine) * 180.0 / 3.14159) + 180.0; // Convert radians to degrees, shift to 0-360 degrees
+  // Read the analog values from the sensor
+  double cosine = (analogRead(A1) - 512.0) / 512.0;  // Normalize to range -1 to 1
+  double sine = (analogRead(A3) - 512.0) / 512.0;    // Normalize to range -1 to 1
+  
+  // Calculate the angle using atan2 (result is in radians, converted to degrees)
+  return (atan2(sine, cosine) * 180.0 / 3.14159) + 180.0;  // Shift angle to 0-360 degrees
 }
 
 // Convert an angle in degrees to the corresponding LED index
