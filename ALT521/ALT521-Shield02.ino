@@ -4,7 +4,7 @@
 //| Author - NVE Corporation, Sam Weber
 //| 9/9/2024
 //|  
-//| Compatable breakout board: ALT521-10E-EVB01
+//| Compatible breakout board: ALT521-10E-EVB01
 //|
 //| Insert an ALT521-10E-EVB01 breakout board
 //| into the Shield edge connector.
