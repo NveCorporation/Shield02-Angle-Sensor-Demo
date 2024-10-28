@@ -3,7 +3,9 @@
 //| ASR012-10 TMR I2C angle sensor
 //| Author - NVE Corporation, Sam Weber
 //| 9/9/2024
-//| 
+//|
+//| Compatable boards: ASR012-10E-EVB01
+//|
 //| Insert an ASR012-10E-EVB01 breakout board
 //| into the Shield edge connector.
 //| Attach the magnet fixture.
