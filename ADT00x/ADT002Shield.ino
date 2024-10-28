@@ -1,12 +1,15 @@
 //-------------------------------------------------------
 //| NVE Arduino Shield Angle/Rotation sensor demo
-//| ADT002-10 TMR SPI angle sensor
+//| ADT00x-10 TMR angle sensor
 //| Author - NVE Corporation, Sam Weber
 //| 9/26/2024
 //|
-//| Compatable Boards: ADT002-10E-EVB01
+//| Compatible breakout board: 
+//| ADT001-10E-EVB01
+//| ADT002-10E-EVB01
+//| ADT005-10E-EVB01
 //|
-//| Insert an ADT002-10E-EVB01 breakout board
+//| Insert an ADT00x-10E-EVB01 breakout board
 //| into the Shield edge connector.
 //| Attach the magnet fixture.
 //| Turn the magnet to see
