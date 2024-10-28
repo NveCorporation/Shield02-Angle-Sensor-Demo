@@ -1,13 +1,13 @@
 //-------------------------------------------------------
 //| NVE Arduino Shield Angle/Rotation sensor demo
-//| ADT00x-10 TMR angle sensor
+//| ADT00x-10 TMR rotation sensors
 //| Author - NVE Corporation, Sam Weber
 //| 9/26/2024
 //|
-//| Compatible breakout board: 
-//| ADT001-10E-EVB01
-//| ADT002-10E-EVB01
-//| ADT005-10E-EVB01
+//| Compatible breakout boards: 
+//|   ADT001-10E-EVB01
+//|   ADT002-10E-EVB01
+//|   ADT005-10E-EVB01
 //|
 //| Insert an ADT00x-10E-EVB01 breakout board
 //| into the Shield edge connector.
@@ -16,7 +16,7 @@
 //| the sensor’s operation.
 //| 
 //| Sensor connections: 
-//| SIN (digital)11; COS (digital)12;
+//|   SIN (digital)11; COS (digital)12
 //-------------------------------------------------------
  
 
