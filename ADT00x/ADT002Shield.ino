@@ -3,7 +3,9 @@
 //| ADT002-10 TMR SPI angle sensor
 //| Author - NVE Corporation, Sam Weber
 //| 9/26/2024
-//| 
+//|
+//| Compatable Boards: ADT002-10E-EVB01
+//|
 //| Insert an ADT002-10E-EVB01 breakout board
 //| into the Shield edge connector.
 //| Attach the magnet fixture.
