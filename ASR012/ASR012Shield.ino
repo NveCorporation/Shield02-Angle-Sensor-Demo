@@ -4,7 +4,7 @@
 //| Author - NVE Corporation, Sam Weber
 //| 9/9/2024
 //|
-//| Compatable boards: ASR012-10E-EVB01
+//| Compatible board: ASR012-10E-EVB01
 //|
 //| Insert an ASR012-10E-EVB01 breakout board
 //| into the Shield edge connector.
@@ -13,7 +13,8 @@
 //| the sensor’s functionality and precision.
 //| 
 //| Sensor connections: 
-//| SCL 12; SDA 11; (Using Softwire not default I2C pins)
+//|   SCL 12; SDA 11 (Using software, 
+//|   not Arduino default I2C pins)
 //-------------------------------------------------------
 
 #include <Adafruit_IS31FL3741.h>
