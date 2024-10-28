@@ -4,7 +4,7 @@
 //| Author - NVE Corporation, Sam Weber
 //| 9/9/2024
 //| 
-//| Insert an AAT-10E-EVB01 breakout board
+//| Insert an AAT00x-10E-EVB01 breakout board
 //| into the Shield edge connector.
 //| Attach the magnet fixture.
 //| Turn the magnet to see
