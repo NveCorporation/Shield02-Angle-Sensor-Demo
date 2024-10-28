@@ -1,10 +1,10 @@
 //-------------------------------------------------------
 //| NVE Arduino Shield Angle/Rotation sensor demo
-//| ASR022-10 TMR SPI angle sensor
+//| ASR022-10 TMR ABZ angle sensor
 //| Author - NVE Corporation, Sam Weber
 //| 9/9/2024
 //|
-//| Compatable boards: ASR022-10E-EVB01
+//| Compatable board: ASR022-10E-EVB01
 //|
 //| Insert an ASR022-10E-EVB01 breakout board
 //| into the Shield edge connector.
@@ -14,7 +14,7 @@
 //| through quadrature encoding.
 //|
 //| Sensor connections: 
-//| A 10; B 12;
+//| A -> 10; B -> 12
 //-------------------------------------------------------
 
 #include <Adafruit_IS31FL3741.h>
