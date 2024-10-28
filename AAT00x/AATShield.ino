@@ -7,7 +7,7 @@
 //| Compatable boards: AAT001-10E-EVB01, AAT003-10E-EVB01
 //|                    AAT006-10E-EVB01, AAT009-10E-EVB01
 //| 
-//| Insert an AAT-10E-EVB01 breakout board
+//| Insert an AAT00x-10E-EVB01 breakout board
 //| into the Shield edge connector.
 //| Attach the magnet fixture.
 //| Turn the magnet to see
