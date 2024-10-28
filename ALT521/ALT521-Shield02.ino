@@ -1,10 +1,10 @@
 //-------------------------------------------------------
 //| NVE Arduino Shield Angle/Rotation sensor demo
-//| ALT521-10 TMR SPI angle sensor
+//| ALT521-10 TMR analog rotation sensor
 //| Author - NVE Corporation, Sam Weber
 //| 9/9/2024
 //|  
-//| Compatable boards: ALT521-10E-EVB01
+//| Compatable breakout board: ALT521-10E-EVB01
 //|
 //| Insert an ALT521-10E-EVB01 breakout board
 //| into the Shield edge connector.
@@ -15,7 +15,7 @@
 //| strength function represented by LED brightness
 //| 
 //| Sensor connections: 
-//| SIN A3; COS A1;
+//| SIN A3; COS A1
 //-------------------------------------------------------
 
 #include <Adafruit_IS31FL3741.h>
