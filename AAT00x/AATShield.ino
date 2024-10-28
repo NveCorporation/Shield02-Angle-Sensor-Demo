@@ -3,6 +3,9 @@
 //| AAT-10 TMR SPI angle sensor
 //| Author - NVE Corporation, Sam Weber
 //| 9/9/2024
+//|
+//| Compatable boards: AAT001-10E-EVB01, AAT003-10E-EVB01
+//|                    AAT006-10E-EVB01, AAT009-10E-EVB01
 //| 
 //| Insert an AAT-10E-EVB01 breakout board
 //| into the Shield edge connector.
