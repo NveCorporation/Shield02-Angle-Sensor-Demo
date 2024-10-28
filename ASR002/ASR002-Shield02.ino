@@ -4,7 +4,7 @@
 //| Author - NVE Corporation, Sam Weber
 //| 9/9/2024
 //|
-//| Compatable boards: ASR002-10E-EVB01
+//| Compatible breakout board: ASR002-10E-EVB01
 //|
 //| Insert an ASR002-10E-EVB01 breakout board
 //| into the Shield edge connector.
