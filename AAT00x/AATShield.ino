@@ -1,11 +1,12 @@
 //-------------------------------------------------------
 //| NVE Arduino Shield Angle/Rotation sensor demo
-//| AAT-10 TMR SPI angle sensor
+//| AAT00x-10E TMR analog angle sensors
 //| Author - NVE Corporation, Sam Weber
 //| 9/9/2024
 //|
-//| Compatable boards: AAT001-10E-EVB01, AAT003-10E-EVB01
-//|                    AAT006-10E-EVB01, AAT009-10E-EVB01
+//| Compatible breakout boards:
+//|   AAT001-10E-EVB01, AAT003-10E-EVB01
+//|   AAT006-10E-EVB01, AAT009-10E-EVB01
 //| 
 //| Insert an AAT00x-10E-EVB01 breakout board
 //| into the Shield edge connector.
@@ -14,7 +15,7 @@
 //| the sensor’s functionality and precision.
 //| 
 //| Sensor connections: 
-//| SIN A3; COS A1;
+//| SIN A3; COS A1
 //-------------------------------------------------------
 
 #include <Adafruit_IS31FL3741.h>
