@@ -14,7 +14,7 @@
 //| through quadrature encoding.
 //|
 //| Sensor connections: 
-//| A -> 10; B -> 12
+//| A -> 10; B -> 12; Z ->13
 //-------------------------------------------------------
 
 #include <Adafruit_IS31FL3741.h>
@@ -48,6 +48,7 @@ int B = 0;
 int lastA = 0;
 int lastB = 0;
 int previousIndex = -1;  // Store the last LED position to turn it off
+int lastZpinState = LOW;  // Track the last state of the Z pin
 
 void setup() {
   Serial.begin(115200);  // Initialize serial communication at 115200 baud
@@ -72,47 +73,47 @@ void loop() {
 ASR022Master();
 }
 
-//ASR022 master method, controls the LED panel as well as signal processing with 
-//ABZ signals for encoding
+// ASR022 master method, controls the LED panel as well as signal processing with 
+// ABZ signals for encoding
 void ASR022Master(){
-  A = digitalRead(10);  // A signal from pin 10
-  B = digitalRead(12);  // B signal from pin 12
+  // Read the state of the Z pin
+  int Zpin = digitalRead(13);
 
-  if (A != lastA) {
-    if (A == B) {
-      counter++;  // Clockwise
-    } else {
-      counter--;  // Counterclockwise
+  // Check if Z pin is HIGH
+  if (Zpin == HIGH) {
+    lightUpAllLEDs();  // Turn on all LEDs
+  } else if (lastZpinState == HIGH && Zpin == LOW) {
+    // Turn off all LEDs when Z pin goes from HIGH to LOW
+    turnOffAllLEDs();
+  } else {
+    // Normal behavior when Z pin is LOW
+    A = digitalRead(10);  // A signal from pin 10
+    B = digitalRead(12);  // B signal from pin 12
+
+    if (A != lastA) {
+      if (A == B) {
+        counter++;  // Clockwise
+      } else {
+        counter--;  // Counterclockwise
+      }
+      lastA = A;
+
+      // Wrap the counter to stay within the 0-255 range
+      counter = wrapCounter(counter, 256);
+
+      // Calculate the angle based on the counter
+      int angle = map(counter, 0, 255, 0, 360);
+
+      // Convert angle to LED position (each LED represents 6 degrees)
+      int ledIndex = (angle / 6) % numLeds;  // Ensures ledIndex stays within 0 to 59
+
+      // Update LED display based on the calculated LED position
+      updateLEDDisplay(ledIndex);
     }
-    lastA = A;
-
-    // Wrap the counter to stay within the 0-255 range
-    counter = wrapCounter(counter, 256);
-
-    // Calculate the angle based on the counter
-    int angle = map(counter, 0, 255, 0, 360);
-
-    // Convert angle to LED position (each LED represents 6 degrees)
-    // Convert angle to LED position (each LED represents 6 degrees)
-    int ledIndex = (angle / 6) % numLeds;  // Ensures ledIndex stays within 0 to 59
-
-    // Update LED display based on the calculated LED position
-    updateLEDDisplay(ledIndex);
-
-    // Print the counter and angle for debugging
-
-    
-    /** Remove the /** and *_/ on lines 103 and 111 if you want to print out information. 
-    //Note this will slow down the Arduino substantially
-    Serial.print("Counter: ");
-    Serial.print(counter);
-    Serial.print(" | Angle: ");
-    Serial.print(angle);
-    Serial.print(" | LED Index: ");
-    Serial.print(ledIndex);
-    Serial.print(" | Values: ");
-    */
   }
+
+  // Update last state of the Z pin
+  lastZpinState = Zpin;
 }
 
 void updateLEDDisplay(int position) {
@@ -136,6 +137,7 @@ void updateLEDDisplay(int position) {
   previousIndex = position;
 }
 
+//Turns off the previous LED to make sure only 1 LED is lit at a time
 void turnOffPreviousLED(int prevIndex) {
   // Get the coordinates of the previous LED
   int x = ledCoordinates[prevIndex].x;
@@ -156,6 +158,31 @@ void setLED(int x, int y, bool state) {
     // Turn off the LED at (x, y)
     ledmatrix.drawPixel(x, y, 0);
   }
+}
+
+//Lights up all the LED's
+void lightUpAllLEDs() {
+  // Turn on all LEDs in the LED matrix
+  for (int i = 0; i < numLeds; i++) {
+    int x = ledCoordinates[i].x;
+    int y = ledCoordinates[i].y;
+    setLED(x, y, true);  // Turn on the LED at each coordinate
+  }
+  // Update the display
+  ledmatrix.show();
+}
+
+
+//Turns off all of the LED's
+void turnOffAllLEDs() {
+  // Turn off all LEDs in the LED matrix
+  for (int i = 0; i < numLeds; i++) {
+    int x = ledCoordinates[i].x;
+    int y = ledCoordinates[i].y;
+    setLED(x, y, false);  // Turn off the LED at each coordinate
+  }
+  // Update the display
+  ledmatrix.show();
 }
 
 // Wrap the counter within the specified range
