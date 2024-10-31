@@ -14,7 +14,7 @@
 //| through quadrature encoding.
 //|
 //| Sensor connections: 
-//| A -> 10; B -> 12; Z ->13
+//| A -> 10; B -> 12; Z -> 13
 //-------------------------------------------------------
 
 #include <Adafruit_IS31FL3741.h>
@@ -160,7 +160,7 @@ void setLED(int x, int y, bool state) {
   }
 }
 
-//Lights up all the LED's
+//Lights up all the LEDs
 void lightUpAllLEDs() {
   // Turn on all LEDs in the LED matrix
   for (int i = 0; i < numLeds; i++) {
@@ -173,7 +173,7 @@ void lightUpAllLEDs() {
 }
 
 
-//Turns off all of the LED's
+//Turns off all of the LEDs
 void turnOffAllLEDs() {
   // Turn off all LEDs in the LED matrix
   for (int i = 0; i < numLeds; i++) {
