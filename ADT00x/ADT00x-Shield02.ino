@@ -66,7 +66,7 @@ QuadrantState quadrantStates[STATE_COUNT] = {
   {STATE_0, ledmatrix.color565(0, 255, 0), 0, 14},   // Blue for STATE_0
   {STATE_1, ledmatrix.color565(255, 0, 255), 15, 29},  // Yellow for STATE_1
   {STATE_3, ledmatrix.color565(255, 0, 0), 30, 44},  // Green for STATE_3
-  {STATE_2, ledmatrix.color565(0, 0, 255), 45, 59} // Red for STATE_2
+  {STATE_2, ledmatrix.color565(0, 255, 255), 45, 59} // Red for STATE_2
 };
 
 // Current and previous states
@@ -143,7 +143,7 @@ void loop() {
     }
   } else{
     Serial.println("Trigger");
-    flashAllLEDs(0, 255, 0, 2);  // Adjusted to the correct RGB order (Green,
+    flashAllLEDs(0, 0, 255, 2);  // Adjusted to the correct RGB order (Green,
   }
 }
 
@@ -275,9 +275,9 @@ void changeStateAlternate(StatesADT newState) {
 
     // Set color based on the direction
     if (clockwise) {
-      tempState.color = ledmatrix.color565(0, 255, 0); // Green for clockwise
+      tempState.color = ledmatrix.color565(0, 255, 0); // Blue for clockwise
     } else {
-      tempState.color = ledmatrix.color565(0, 0, 255); // Blue for counterclockwise
+      tempState.color = ledmatrix.color565(0, 255, 255); // Purple for counterclockwise
     }
 
     // Activate the current quadrant based on the modified state
