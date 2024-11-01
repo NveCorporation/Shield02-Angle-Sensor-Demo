@@ -1,0 +1,9 @@
+In order to use this product properly, you need to download an Arduino  library called Softwire.h. 
+This will guide you on how to download that package.
+
+1. Open ArduinoIDE.
+2. Copy and Paste the ASR012 code and paste it into the file.
+3. On the left side of ArduinoIDE, Click on the bookshelf Icon, also called "LibraryManager"
+4. In the library manager search bar, search up Softwire, There should be one created by Steve Marple,
+   Select the dropdown menu and change the version to 2.0.10.
+5. Click install.
