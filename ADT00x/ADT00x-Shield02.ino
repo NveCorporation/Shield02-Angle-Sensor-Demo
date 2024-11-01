@@ -16,7 +16,7 @@
 //| the sensor’s operation.
 //| 
 //| Sensor connections: 
-//|   SIN (digital)11; COS (digital)12
+//|   SIN (digital)11; COS (digital)12; Excess Magnetic Field (digital)13
 //-------------------------------------------------------
  
 
@@ -122,23 +122,28 @@ void setup() {
 }
 
 void loop() {  
-  if(toggleState){
-    if(firstIterationToggle){
-      turnOffAllQuadrants(); 
-      Serial.println("ToggleState: " + String(firstIterationToggle));
-      quadrantFlasher();
-      firstIterationToggle = false; // Set to false after the first iteration
+  if(digitalRead(13) == 0){
+    if(toggleState){
+      if(firstIterationToggle){
+        turnOffAllQuadrants(); 
+        Serial.println("ToggleState: " + String(firstIterationToggle));
+        quadrantFlasher();
+        firstIterationToggle = false; // Set to false after the first iteration
+      } else {
+        quadrantFlasher();
+      }
     } else {
-      quadrantFlasher();
+      if(firstIterationToggle){
+        turnOffAllQuadrants(); 
+        directionalQuadrants();
+        firstIterationToggle = false; // Set to false after the first iteration
+      } else {
+        directionalQuadrants();
+      }
     }
-  } else {
-    if(firstIterationToggle){
-      turnOffAllQuadrants(); 
-      directionalQuadrants();
-      firstIterationToggle = false; // Set to false after the first iteration
-    } else {
-      directionalQuadrants();
-    }
+  } else{
+    Serial.println("Trigger");
+    flashAllLEDs(0, 255, 0, 2);  // Adjusted to the correct RGB order (Green,
   }
 }
 
