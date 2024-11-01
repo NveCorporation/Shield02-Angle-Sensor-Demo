@@ -13,19 +13,18 @@
 //| the sensor’s functionality and precision.
 //| 
 //| Sensor connections: 
-//|   SCL 12; SDA 11 (Using software, 
-//|   not Arduino default I2C pins)
+//|   SCL: SCL, SDA: SDA;
 //-------------------------------------------------------
 
-#include <Adafruit_IS31FL3741.h>
-#include <SoftwareWire.h> // Include the SoftwareWire library for software I²C communication
+#include <Wire.h>                 // Include the Wire library for I²C communication
+#include <Adafruit_IS31FL3741.h>   // Include the Adafruit library for the LED panel
 
-Adafruit_IS31FL3741_QT ledmatrix;
-TwoWire *i2c = &Wire; // I2C interface for the LED matrix
+const uint8_t ASR012_I2C_ADDRESS = 0x24; // I²C address of the ASR012 sensor
+Adafruit_IS31FL3741_QT ledmatrix;        // Create an instance of the LED matrix
 
 const int numLeds = 60; // Number of LEDs in the array
 
-// Define your array of LED coordinates as ordered pairs (x, y)
+// Define LED coordinates
 struct LEDCoordinate {
   int x;
   int y;
@@ -41,118 +40,76 @@ LEDCoordinate ledCoordinates[numLeds] = {
     {6, 8}, {6, 7}, {6, 6}, {6, 5}, {6, 4}, {6, 3}
 };
 
-int angle;
-int previousLedIndex = -1;
-int lastLedIndexesASR012[5] = {-1, -1, -1, -1, -1};  // To store the last 5 LED indexes
-bool clockwise = true;  // To track the rotation direction
-
-const int ASR012_I2C_ADDRESS = 0x24; // I²C address of the ASR012 sensor
-SoftwareWire myWire(11, 12); // SDA on pin 11, SCL on pin 12
+int previousLedIndex = -1; // Store the previous LED index
 
 void setup() {
-  Serial.begin(9600); // Start serial communication at 9600 baud
-  myWire.begin(); // Initialize I²C as master on pins 11 and 12
+  Serial.begin(9600);  // Start serial communication at 9600 baud
+  Wire.begin();        // Initialize I²C as master
+  pinMode(9, OUTPUT);
+  digitalWrite(9, HIGH);
   
-  if (!ledmatrix.begin(IS3741_ADDR_DEFAULT, i2c)) {
-    Serial.println("IS31FL3741 not found");
-    while (1);
+  // Initialize the LED matrix
+  if (!ledmatrix.begin()) {
+    Serial.println("LED panel not found!");
+    while (1);  // Halt if LED matrix is not found
   }
-  Serial.println("IS31FL3741 found!");
-
-  i2c->setClock(800000);  // Set I2C clock speed for the LED matrix
-
-  ledmatrix.setLEDscaling(0xFF);  // Set all LEDs to full scale
-
-  // Lower the global current to reduce overall brightness
-  ledmatrix.setGlobalCurrent(0x50);  // Set the global current
-  Serial.print("Global current set to: ");
-  Serial.println(ledmatrix.getGlobalCurrent());
-
-  ledmatrix.enable(true);  // Enable the LED matrix
+  Serial.println("LED panel initialized!");
+  ledmatrix.setGlobalCurrent(0x50);    // Set global brightness
+  ledmatrix.setLEDscaling(0xFF);       // Set all LEDs to full brightness
+  ledmatrix.enable(true);              // Enable the LED matrix
 }
 
 void loop() {
-  ASR012();  // Call the function to read the angle and update LEDs
-}
+  // Read the angle and print it
+  uint16_t angle = readAngle();       // Read the angle from the sensor
+  float angleDegrees = angle / 10.0;  // Convert the angle to degrees
+  Serial.print("Angle: ");
+  Serial.print(angleDegrees);
+  Serial.println(" degrees");
 
-
-//ASR012 master method that controls the LED's and
-//I2C communication with the sensor
-void ASR012() {
-  readAngleASR012();
+  // Convert the angle to the corresponding LED index
   int ledIndex = angleToLED(angle);
+
+  // Only update the LED if the index has changed
   if (ledIndex != previousLedIndex) {
-    // Determine the rotation direction
-    clockwise = (ledIndex > previousLedIndex) || (ledIndex == 0 && previousLedIndex == numLeds - 1);
-    
-    // Update LEDs with continuous lighting
-    updateCometASR012(ledIndex);
-    previousLedIndex = ledIndex; // Update the previous index
-    pinMode(11, INPUT);
-    pinMode(12, INPUT);
+    lightUpLED(ledIndex);            // Light up the new LED
+    previousLedIndex = ledIndex;      // Update the previous index
   }
 
-  delay(10); // Adjust delay for desired update speed
+
 }
 
+// Function to read angle from ASR012 sensor
+uint16_t readAngle() {
+  uint16_t angle = 0;
+  
+  Wire.beginTransmission(ASR012_I2C_ADDRESS);
+  Wire.write(0x00); // Address 0 to read the angle
+  Wire.endTransmission(false); // Keep the connection active
 
-//Uses Softwire I2C, the LED panel is using the I2C pins
-//so we must rewire the device to function with a software
-//driven I2C Communication protocol
-uint16_t readAngleASR012() {
-  myWire.beginTransmission(ASR012_I2C_ADDRESS);
-  myWire.write(0x00); // Address 0 to read the angle
-  myWire.endTransmission(false); // Send the data but keep the connection active
-  int bytesReceived = myWire.requestFrom(ASR012_I2C_ADDRESS, 2, true); // Request 2 bytes from the sensor
+  uint8_t bytesReceived = Wire.requestFrom((int)ASR012_I2C_ADDRESS, 2);
   if (bytesReceived == 2) { // Check if 2 bytes were received
-    angle = myWire.read() << 8; // Read the MSB
-    angle |= myWire.read(); // Read the LSB and combine with MSB
+    angle = (Wire.read() << 8) | Wire.read(); // Read and combine MSB and LSB
   }
+  
   return angle; // Return the 16-bit angle value in tenths of degrees
 }
 
-
-//Converts the angle to corresponding LED
+// Convert angle to corresponding LED index
 int angleToLED(int angle) {
-  // Normalize angle from 0-3600 to 0-3599
-  angle = angle % 3600;
+  angle = angle % 3600;           // Normalize angle from 0-3600
+  return angle / (3600 / numLeds); // Map angle to an LED index (0-59)
+}
+
+// Light up the LED at the specified index
+void lightUpLED(int ledIndex) {
+  // Turn off the previously lit LED, if any
+  if (previousLedIndex >= 0) {
+    ledmatrix.drawPixel(ledCoordinates[previousLedIndex].x, ledCoordinates[previousLedIndex].y, ledmatrix.color565(0, 0, 0));
+  }
   
-  // Map angle to an LED index (0-59)
-  return angle / 60;
+  // Turn on the LED at the specified index in green
+  ledmatrix.drawPixel(ledCoordinates[ledIndex].x, ledCoordinates[ledIndex].y, ledmatrix.color565(0, 255, 0));
+  ledmatrix.show(); // Update the LED panel
 }
 
-
-//Updates the comet tail of the ASR012
-void updateCometASR012(int ledIndex) {
-  // Turn off the oldest LED in the tail (only if the tail is fully populated)
-  if (lastLedIndexesASR012[4] != -1) {
-    int oldIndex = lastLedIndexesASR012[4];
-    ledmatrix.drawPixel(ledCoordinates[oldIndex].x, ledCoordinates[oldIndex].y, ledmatrix.color565(0, 0, 0));
-  }
-
-  // Shift the last 5 LED indexes
-  for (int i = 4; i > 0; i--) {
-    lastLedIndexesASR012[i] = lastLedIndexesASR012[i - 1];
-  }
-  lastLedIndexesASR012[0] = ledIndex;  // Store the current LED index
-
-  // Light up the LEDs based on the direction of movement with harsher dimming
-  for (int i = 0; i < 5; i++) {
-    if (lastLedIndexesASR012[i] != -1) {  // Check if the index is valid
-      int index = lastLedIndexesASR012[i];
-      uint16_t brightness = map(i, 0, 4, 255, 10); // Harsher dimming, lower the minimum brightness
-      ledmatrix.drawPixel(ledCoordinates[index].x, ledCoordinates[index].y, ledmatrix.color565(0, brightness, brightness)); // Green, Blue, Red order
-    }
-  }
-
-  // Update the LED matrix display
-  ledmatrix.show();
-}
-
-void turnOffAllQuadrants() {
-  for (int i = 0; i < numLeds; i++) {
-    int x = ledCoordinates[i].x;
-    int y = ledCoordinates[i].y;
-    ledmatrix.drawPixel(x, y, ledmatrix.color565(0, 0, 0)); // Turn off LED
-  }
-}
